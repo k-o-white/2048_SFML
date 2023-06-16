@@ -1,58 +1,42 @@
-#include "Gameplay.h"
 #include "SFML/Graphics.hpp"
+#include "Gameplay.h"
 
 int main()
 {
-    const int cellSize = 80;
-    const int arraySize = 4;
+    const unsigned int cellSize = 160;
+    const unsigned int arraySize = 4;
+    const unsigned int windowWidth = 680;
+    const unsigned int windowHeight = 780;
 
-    Gameplay game(arraySize);
-
-    sf::RenderWindow app
-        (sf::VideoMode(arraySize * cellSize, arraySize * cellSize), "2048");
-
+    sf::RenderWindow app(sf::VideoMode(windowWidth, windowHeight), "2048", sf::Style::Close);
+    auto image = sf::Image{};
+    if (!image.loadFromFile(".\\resources\\2048.png"))
+    {
+        return 0;
+    }
+    app.setIcon(image.getSize().x, image.getSize().y, image.getPixelsPtr());
+    app.setFramerateLimit(60);
+    scenes currentScene = MENU;
     while (app.isOpen())
     {
-        sf::Event event;
-        while (app.pollEvent(event))
+        if (currentScene == MENU)
         {
-            if (event.type == sf::Event::KeyPressed && !game.isPlayerWon() && !game.isGameOver())
-            {
-                switch (event.key.code)
-                {
-                    case sf::Keyboard::A:
-                        game.moveLeft();
-                        break;
-                    case sf::Keyboard::D:
-                        game.moveRight();
-                        break;
-                    case sf::Keyboard::W:
-                        game.moveUp();
-                        break;
-                    case sf::Keyboard::S:
-                        game.moveDown();
-                        break;
-                    case sf::Keyboard::Left:
-                        game.moveLeft();
-                        break;
-                    case sf::Keyboard::Right:
-                        game.moveRight();
-                        break;
-                    case sf::Keyboard::Up:
-                        game.moveUp();
-                        break;
-                    case sf::Keyboard::Down:
-                        game.moveDown();
-                        break;
-                }
-            }
-            else if (event.type == sf::Event::Closed)
-                app.close();
+            auto* menu = new MainMenu();
+            while (currentScene == MENU && app.isOpen())
+                menu->displayMenu(app, currentScene);
+            delete menu;
+            menu = nullptr;
         }
-
-        app.clear();
-        game.display(app, cellSize);
-        app.display();
+        else if (currentScene == GAME)
+        {
+            auto* game = new Gameplay();
+            while (currentScene == GAME && app.isOpen())
+                game->displayGame(app, cellSize, currentScene);
+            delete game;
+            game = nullptr;
+        }
+        else
+            app.close();
     }
     return 0;
 }
