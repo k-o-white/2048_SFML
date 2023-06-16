@@ -4,105 +4,76 @@
 
 #include "Gameplay.h"
 #include <iostream>
+#include <cmath>
 #include <ctime>
+
+void Gameplay::startNewGame()
+{
+    this->score = 0;
+    this->first2048 = false;
+    for(int i = 0; i < size; ++i)
+    {
+        for (int j = 0; j < size; ++j)
+            this->field[i][j] = 0;
+    }
+    std::srand(std::time(nullptr));
+    int values[] = {2, 4};
+    for (int i = 0; i < 2; ++i)
+    {
+        int y, x;
+        do {
+            y = std::rand() % size;
+            x = std::rand() % size;
+        } while (this->field[y][x] != 0);
+        this->field[y][x] = values[std::rand() % 2];
+    }
+}
 
 Gameplay::Gameplay()
 {
-    size = 4;
-    field = new int*[size];
-    for(int i = 0; i < size; ++i)
+    this->size = 4;
+    this->field = new int*[this->size];
+    for(int i = 0; i < this->size; ++i)
+        field[i] = new int[this->size];
+    this->startNewGame();
+    this->font.loadFromFile(".\\resources\\HighlandGothicFLF.ttf");
+    this->numbersFont.loadFromFile(".\\resources\\HighlandGothicFLF.ttf");
+    background = sf::RectangleShape(sf::Vector2f(640.f, 640.f));
+    background.setPosition(20, 20);
+    background.setOutlineThickness(5.f);
+    background.setFillColor(sf::Color(173, 157, 143));
+    background.setOutlineColor(sf::Color(173, 157, 143));
+    scoreText = sf::Text("", font, 20);
+    scoreText.setStyle(sf::Text::Bold);
+    highScoreText = sf::Text("", font, 20);
+    highScoreText.setStyle(sf::Text::Bold);
+    startNewGameText = sf::Text("[Space] - Restart", font, 20);
+    startNewGameText.setStyle(sf::Text::Bold);
+    for (int i = 0; i < this->size; ++i)
     {
-        field[i] = new int[size];
-        for (int j = 0; j < size; ++j)
-            field[i][j] = 0;
+        for (int j = 0; j < this->size; ++j)
+        {
+            this->tiles[i][j] = sf::RectangleShape(sf::Vector2f(160.f, 160.f));
+            this->tiles[i][j].setFillColor(sf::Color(255, 255, 255));
+            this->tiles[i][j].setOutlineThickness(-5.f);
+            this->tiles[i][j].setOutlineColor(sf::Color(173, 157, 143));
+            this->tileValues[i][j] = sf::Text("", numbersFont, 40);
+            this->tileValues[i][j].setStyle(sf::Text::Bold);
+        }
     }
-    std::srand(std::time(nullptr));
-    int values[] = {2, 4};
-    for (int i = 0; i < 2; ++i)
-    {
-        int y, x;
-        do {
-            y = std::rand() % size;
-            x = std::rand() % size;
-        } while (field[y][x] != 0);
-        field[y][x] = values[std::rand() % 2];
-    }
-
-    empty.loadFromFile("..\\sprites\\empty.jpg");
-    emptySprite = new sf::Sprite(empty);
-    two.loadFromFile("..\\sprites\\2.jpg");
-    twoSprite = new sf::Sprite(two);
-    four.loadFromFile("..\\sprites\\4.jpg");
-    fourSprite = new sf::Sprite(four);
-    eight.loadFromFile("..\\sprites\\8.jpg");
-    eightSprite = new sf::Sprite(eight);
-    sixteen.loadFromFile("..\\sprites\\16.jpg");
-    sixteenSprite = new sf::Sprite(sixteen);
-    thirtyTwo.loadFromFile("..\\sprites\\32.jpg");
-    thirtyTwoSprite = new sf::Sprite(thirtyTwo);
-    sixtyFour.loadFromFile("..\\sprites\\64.jpg");
-    sixtyFourSprite = new sf::Sprite(sixtyFour);
-    oneHundredTwentyEight.loadFromFile("..\\sprites\\128.jpg");
-    oneHundredTwentyEightSprite = new sf::Sprite(oneHundredTwentyEight);
-    twoHundredFiftySix.loadFromFile("..\\sprites\\256.jpg");
-    twoHundredFiftySixSprite = new sf::Sprite(twoHundredFiftySix);
-    fiveHundredTwelve.loadFromFile("..\\sprites\\512.jpg");
-    fiveHundredTwelveSprite = new sf::Sprite(fiveHundredTwelve);
-    oneThousandTwentyFour.loadFromFile("..\\sprites\\1024.jpg");
-    oneThousandTwentyFourSprite = new sf::Sprite(oneThousandTwentyFour);
-    twoThousandFortyEight.loadFromFile("..\\sprites\\2048.jpg");
-    twoThousandFortyEightSprite = new sf::Sprite(twoThousandFortyEight);
-}
-
-Gameplay::Gameplay(int _size) : size(_size)
-{
-    field = new int*[size];
-    for(int i = 0; i < size; ++i)
-    {
-        field[i] = new int[size];
-        for (int j = 0; j < size; ++j)
-            field[i][j] = 0;
-    }
-    std::srand(std::time(nullptr));
-    int values[] = {2, 4};
-    for (int i = 0; i < 2; ++i)
-    {
-        int y, x;
-        do {
-            y = std::rand() % size;
-            x = std::rand() % size;
-        } while (field[y][x] != 0);
-        field[y][x] = values[std::rand() % 2];
-    }
-
-    empty.loadFromFile("..\\sprites\\empty.png");
-    emptySprite = new sf::Sprite(empty);
-    two.loadFromFile("..\\sprites\\2.png");
-    twoSprite = new sf::Sprite(two);
-    four.loadFromFile("..\\sprites\\4.png");
-    fourSprite = new sf::Sprite(four);
-    eight.loadFromFile("..\\sprites\\8.png");
-    eightSprite = new sf::Sprite(eight);
-    sixteen.loadFromFile("..\\sprites\\16.png");
-    sixteenSprite = new sf::Sprite(sixteen);
-    thirtyTwo.loadFromFile("..\\sprites\\32.png");
-    thirtyTwoSprite = new sf::Sprite(thirtyTwo);
-    sixtyFour.loadFromFile("..\\sprites\\64.png");
-    sixtyFourSprite = new sf::Sprite(sixtyFour);
-    oneHundredTwentyEight.loadFromFile("..\\sprites\\128.png");
-    oneHundredTwentyEightSprite = new sf::Sprite(oneHundredTwentyEight);
-    twoHundredFiftySix.loadFromFile("..\\sprites\\256.png");
-    twoHundredFiftySixSprite = new sf::Sprite(twoHundredFiftySix);
-    fiveHundredTwelve.loadFromFile("..\\sprites\\512.png");
-    fiveHundredTwelveSprite = new sf::Sprite(fiveHundredTwelve);
-    oneThousandTwentyFour.loadFromFile("..\\sprites\\1024.png");
-    oneThousandTwentyFourSprite = new sf::Sprite(oneThousandTwentyFour);
-    twoThousandFortyEight.loadFromFile("..\\sprites\\2048.png");
-    twoThousandFortyEightSprite = new sf::Sprite(twoThousandFortyEight);
+    std::ifstream loadHighScore(".\\resources\\high_score.bin", std::ios::binary);
+    if (loadHighScore.is_open())
+        loadHighScore.read((char*)&this->highScore, sizeof(this->highScore));
+    else
+        this->highScore = 0;
+    loadHighScore.close();
 }
 
 Gameplay::~Gameplay()
 {
+    std::ofstream loadHighScore(".\\resources\\high_score.bin", std::ios::binary);
+    loadHighScore.write((char*)&this->highScore, sizeof(this->highScore));
+    loadHighScore.close();
     for (int i = size - 1; i >= 0; --i)
     {
         delete field[i];
@@ -110,41 +81,18 @@ Gameplay::~Gameplay()
     }
     delete field;
     field = nullptr;
-    delete emptySprite;
-    emptySprite = nullptr;
-    delete twoSprite;
-    twoSprite = nullptr;
-    delete fourSprite;
-    fourSprite = nullptr;
-    delete eightSprite;
-    eightSprite = nullptr;
-    delete sixteenSprite;
-    sixteenSprite = nullptr;
-    delete thirtyTwoSprite;
-    thirtyTwoSprite = nullptr;
-    delete sixtyFourSprite;
-    sixtyFourSprite = nullptr;
-    delete oneHundredTwentyEightSprite;
-    oneHundredTwentyEightSprite = nullptr;
-    delete twoHundredFiftySixSprite;
-    twoHundredFiftySixSprite = nullptr;
-    delete fiveHundredTwelveSprite;
-    fiveHundredTwelveSprite = nullptr;
-    delete oneThousandTwentyFourSprite;
-    oneThousandTwentyFourSprite = nullptr;
-    delete twoThousandFortyEightSprite;
-    twoThousandFortyEightSprite = nullptr;
 }
 
 void Gameplay::addNew()
 {
-    int values[] = {2, 4};
+    int values[] = {2, 2, 2, 2, 2, 2, 2,4};
     int i, j;
+    std::srand(std::time(nullptr));
     do {
         i = std::rand() % size;
         j = std::rand() % size;
     } while (field[i][j] != 0);
-    field[i][j] = values[std::rand() % 2];
+    field[i][j] = values[std::rand() % std::size(values)];
 }
 
 void Gameplay::moveLeft()
@@ -167,8 +115,11 @@ void Gameplay::moveLeft()
                     {
                         match = true;
                         newValues[newValuesCount] = field[i][j] * 2;
-                        if (newValues[newValuesCount] == 2048)
+                        if (newValues[newValuesCount] == 2048 && !first2048)
+                        {
                             winning = true;
+                            first2048 = true;
+                        }
                         score += newValues[newValuesCount];
                         i = k;
                     }
@@ -195,6 +146,8 @@ void Gameplay::moveLeft()
     }
     if (changed)
         addNew();
+    if (score > highScore)
+        highScore = score;
 }
 
 void Gameplay::moveRight()
@@ -217,8 +170,11 @@ void Gameplay::moveRight()
                     {
                         match = true;
                         newValues[newValuesCount] = field[i][j] * 2;
-                        if (newValues[newValuesCount] == 2048)
+                        if (newValues[newValuesCount] == 2048 && !first2048)
+                        {
                             winning = true;
+                            first2048 = true;
+                        }
                         score += newValues[newValuesCount];
                         i = k;
                     }
@@ -246,6 +202,8 @@ void Gameplay::moveRight()
 
     if (changed)
         addNew();
+    if (score > highScore)
+        highScore = score;
 }
 
 void Gameplay::moveUp()
@@ -269,8 +227,11 @@ void Gameplay::moveUp()
                     {
                         match = true;
                         newValues[newValuesCount] = field[i][j] * 2;
-                        if (newValues[newValuesCount] == 2048)
+                        if (newValues[newValuesCount] == 2048 && !first2048)
+                        {
                             winning = true;
+                            first2048 = true;
+                        }
                         score += newValues[newValuesCount];
                         j = k;
                     }
@@ -298,6 +259,8 @@ void Gameplay::moveUp()
 
     if (changed)
         addNew();
+    if (score > highScore)
+        highScore = score;
 }
 
 void Gameplay::moveDown()
@@ -320,8 +283,11 @@ void Gameplay::moveDown()
                     {
                         match = true;
                         newValues[newValuesCount] = field[i][j] * 2;
-                        if (newValues[newValuesCount] == 2048)
+                        if (newValues[newValuesCount] == 2048 && !first2048)
+                        {
                             winning = true;
+                            first2048 = true;
+                        }
                         score += newValues[newValuesCount];
                         j = k;
                     }
@@ -349,66 +315,120 @@ void Gameplay::moveDown()
 
     if (changed)
         addNew();
+    if (score > highScore)
+        highScore = score;
 }
 
-void Gameplay::display(sf::RenderWindow &app, const int &cellSize)
+void Gameplay::drawGame(sf::RenderWindow &app, const int &cellSize)
 {
-    for (int i = 0; i < size; ++i)
+    app.draw(background);
+    int i, j;
+    for (i = 0; i < size; ++i)
     {
-        for (int j = 0; j < size; ++j)
+        for (j = 0; j < size; ++j)
         {
             switch (field[i][j])
             {
                 case 0:
-                    emptySprite->setPosition(i * cellSize, j * cellSize);
-                    app.draw(*emptySprite);
+                    tiles[i][j].setFillColor(sf::Color(193, 179, 164));
                     break;
                 case 2:
-                    twoSprite->setPosition(i * cellSize, j * cellSize);
-                    app.draw(*twoSprite);
+                    tiles[i][j].setFillColor(sf::Color(238, 224, 218));
                     break;
                 case 4:
-                    fourSprite->setPosition(i * cellSize, j * cellSize);
-                    app.draw(*fourSprite);
+                    tiles[i][j].setFillColor(sf::Color(237,224,200));
                     break;
                 case 8:
-                    eightSprite->setPosition(i * cellSize, j * cellSize);
-                    app.draw(*eightSprite);
+                    tiles[i][j].setFillColor(sf::Color(242,177,121));
                     break;
                 case 16:
-                    sixteenSprite->setPosition(i * cellSize, j * cellSize);
-                    app.draw(*sixteenSprite);
+                    tiles[i][j].setFillColor(sf::Color(245,149,99));
                     break;
                 case 32:
-                    thirtyTwoSprite->setPosition(i * cellSize, j * cellSize);
-                    app.draw(*thirtyTwoSprite);
+                    tiles[i][j].setFillColor(sf::Color(246,124,96));
                     break;
                 case 64:
-                    sixtyFourSprite->setPosition(i * cellSize, j * cellSize);
-                    app.draw(*sixtyFourSprite);
+                    tiles[i][j].setFillColor(sf::Color(246,94,56));
                     break;
                 case 128:
-                    oneHundredTwentyEightSprite->setPosition(i * cellSize, j * cellSize);
-                    app.draw(*oneHundredTwentyEightSprite);
+                    tiles[i][j].setFillColor(sf::Color(237,207,115));
                     break;
                 case 256:
-                    twoHundredFiftySixSprite->setPosition(i * cellSize, j * cellSize);
-                    app.draw(*twoHundredFiftySixSprite);
+                    tiles[i][j].setFillColor(sf::Color(237,204,98));
                     break;
                 case 512:
-                    fiveHundredTwelveSprite->setPosition(i * cellSize, j * cellSize);
-                    app.draw(*fiveHundredTwelveSprite);
+                    tiles[i][j].setFillColor(sf::Color(237,200,80));
                     break;
                 case 1024:
-                    oneThousandTwentyFourSprite->setPosition(i * cellSize, j * cellSize);
-                    app.draw(*oneThousandTwentyFourSprite);
+                    tiles[i][j].setFillColor(sf::Color(237,197,63));
                     break;
                 case 2048:
-                    twoThousandFortyEightSprite->setPosition(i * cellSize, j * cellSize);
-                    app.draw(*twoThousandFortyEightSprite);
+                    tiles[i][j].setFillColor(sf::Color(237,194,45));
                     break;
+                default:
+                    tiles[i][j].setFillColor(sf::Color(125,216,15));
+            }
+            tiles[i][j].setPosition(i * cellSize + 20, j * cellSize + 20);
+            app.draw(tiles[i][j]);
+            if (field[i][j] > 0)
+            {
+                tileValues[i][j].setPosition(i * cellSize + 35, j * cellSize + 30);
+                if (field[i][j] <= 4)
+                    tileValues[i][j].setColor(sf::Color::Black);
+                else
+                    tileValues[i][j].setColor(sf::Color::White);
+                std::string tileValueText;
+                if (field[i][j] > int(pow(2, 16)))
+                {
+                    tileValueText = "2**" + std::to_string(int(log2(double(field[i][j]))));
+                    tileValues[i][j].setCharacterSize(30);
+                }
+                else
+                {
+                    tileValueText = std::to_string(field[i][j]);
+                    if (tileValueText.length() == 5)
+                        tileValues[i][j].setCharacterSize(30);
+                    if (tileValues[i][j].getCharacterSize() < 40 && tileValueText.length() < 5)
+                        tileValues[i][j].setCharacterSize(40);
+                }
+                tileValues[i][j].setString(tileValueText);
+                app.draw(tileValues[i][j]);
             }
         }
+    }
+    std::string scoreString = std::to_string(this->score);
+    scoreText.setColor(sf::Color::Black);
+    scoreText.setString("Score: " + scoreString);
+    scoreText.setPosition(30, 690);
+    std::string highScoreString = std::to_string(this->highScore);
+    highScoreText.setColor(sf::Color::Black);
+    highScoreText.setString("High score: " + highScoreString);
+    highScoreText.setPosition(30, 720);
+    startNewGameText.setColor(sf::Color::Black);
+    startNewGameText.setPosition(450, 690);
+    app.draw(scoreText);
+    app.draw(highScoreText);
+    if (!this->isGameOver() && !this->isPlayerWon())
+        app.draw(startNewGameText);
+    if (this->isGameOver())
+    {
+        sf::Text gameOverText("GAME OVER!\nTry again?\n(y/n)", font, 80);
+        gameOverText.setColor(sf::Color::Red);
+        gameOverText.setStyle(sf::Text::Bold);
+        gameOverText.setOutlineThickness(5.f);
+        gameOverText.setOutlineColor(sf::Color::White);
+        gameOverText.setPosition(50, 300);
+        app.draw(gameOverText);
+    }
+    if (this->isPlayerWon())
+    {
+        sf::Text winText("YOU WIN!\nContinue?\n(y/n)", font, 80);
+        winText.setColor(sf::Color::Green);
+        winText.setStyle(sf::Text::Bold);
+        winText.setOutlineThickness(5.f);
+        winText.setOutlineColor(sf::Color::White);
+        winText.setPosition(50, 300);
+        app.draw(winText);
     }
 }
 
@@ -472,4 +492,74 @@ bool Gameplay::isGameOver() const
 bool Gameplay::isPlayerWon() const
 {
     return winning;
+}
+
+void Gameplay::displayGame(sf::RenderWindow &w, const int &cellsize, scenes &scene)
+{
+    sf::Event event;
+    while (w.pollEvent(event))
+    {
+        if (event.type == sf::Event::KeyPressed && !this->isPlayerWon() && !this->isGameOver())
+        {
+            switch (event.key.code)
+            {
+                case sf::Keyboard::A:
+                    this->moveLeft();
+                    break;
+                case sf::Keyboard::D:
+                    this->moveRight();
+                    break;
+                case sf::Keyboard::W:
+                    this->moveUp();
+                    break;
+                case sf::Keyboard::S:
+                    this->moveDown();
+                    break;
+                case sf::Keyboard::Left:
+                    this->moveLeft();
+                    break;
+                case sf::Keyboard::Right:
+                    this->moveRight();
+                    break;
+                case sf::Keyboard::Up:
+                    this->moveUp();
+                    break;
+                case sf::Keyboard::Down:
+                    this->moveDown();
+                    break;
+                case sf::Keyboard::Space:
+                    this->startNewGame();
+                    break;
+            }
+        }
+        else if (this->isPlayerWon() && event.type == sf::Event::KeyPressed)
+        {
+            switch (event.key.code)
+            {
+                case sf::Keyboard::Y:
+                    winning = false;
+                    break;
+                case sf::Keyboard::N:
+                    w.close();
+                    break;
+            }
+        }
+        else if (this->isGameOver() && event.type == sf::Event::KeyPressed)
+        {
+            switch (event.key.code)
+            {
+                case sf::Keyboard::Y:
+                    this->startNewGame();
+                    break;
+                case sf::Keyboard::N:
+                    w.close();
+                    break;
+            }
+        }
+        else if (event.type == sf::Event::Closed)
+           w.close();
+    }
+    w.clear(sf::Color(255, 218, 185, 0));
+    this->drawGame(w, cellsize);
+    w.display();
 }

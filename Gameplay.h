@@ -3,44 +3,32 @@
 //
 
 #pragma once
+#include <fstream>
+#include <array>
 #include "SFML/Graphics.hpp"
+#include "MainMenu.h"
 
 class Gameplay
 {
 private:
     int **field = nullptr;
+    std::array<std::array<sf::RectangleShape, 4>, 4> tiles;
+    std::array<std::array<sf::Text, 4>, 4> tileValues;
     int size;
     bool winning = false;
+    bool first2048 = false;
     int score = 0;
-    sf::Texture empty;
-    sf::Texture two;
-    sf::Texture four;
-    sf::Texture eight;
-    sf::Texture sixteen;
-    sf::Texture thirtyTwo;
-    sf::Texture sixtyFour;
-    sf::Texture oneHundredTwentyEight;
-    sf::Texture twoHundredFiftySix;
-    sf::Texture fiveHundredTwelve;
-    sf::Texture oneThousandTwentyFour;
-    sf::Texture twoThousandFortyEight;
+    int highScore = 0;
+    sf::Font font;
+    sf::Font numbersFont;
+    sf::RectangleShape background;
+    sf::Text scoreText;
+    sf::Text highScoreText;
+    sf::Text startNewGameText;
 
-    sf::Sprite* emptySprite = nullptr;
-    sf::Sprite* twoSprite = nullptr;
-    sf::Sprite* fourSprite = nullptr;
-    sf::Sprite* eightSprite = nullptr;
-    sf::Sprite* sixteenSprite = nullptr;
-    sf::Sprite* thirtyTwoSprite = nullptr;
-    sf::Sprite* sixtyFourSprite = nullptr;
-    sf::Sprite* oneHundredTwentyEightSprite = nullptr;
-    sf::Sprite* twoHundredFiftySixSprite = nullptr;
-    sf::Sprite* fiveHundredTwelveSprite = nullptr;
-    sf::Sprite* oneThousandTwentyFourSprite = nullptr;
-    sf::Sprite* twoThousandFortyEightSprite = nullptr;
+    void startNewGame();
 public:
     Gameplay();
-
-    Gameplay(int _size);
 
     ~Gameplay();
 
@@ -54,7 +42,7 @@ public:
 
     void moveRight();
 
-    void display(sf::RenderWindow &app, const int &cellSize);
+    void drawGame(sf::RenderWindow &app, const int &cellSize);
 
     bool canMoveUp() const;
 
@@ -67,4 +55,6 @@ public:
     bool isGameOver() const;
 
     bool isPlayerWon() const;
+
+    void displayGame(sf::RenderWindow &w, const int &cellsize, scenes &scene);
 };
