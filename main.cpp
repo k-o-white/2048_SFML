@@ -1,17 +1,17 @@
 #include "SFML/Graphics.hpp"
 #include "Gameplay.h"
+#include <ctime>
 
 int main()
 {
+    std::srand(std::time(nullptr));
     const unsigned int cellSize = 160;
-    const unsigned int arraySize = 4;
-    const unsigned int windowWidth = 680;
-    const unsigned int windowHeight = 780;
 
-    sf::RenderWindow app(sf::VideoMode(windowWidth, windowHeight), "2048", sf::Style::Close);
+    sf::RenderWindow app(sf::VideoMode(680, 780), "2048", sf::Style::Close);
     auto image = sf::Image{};
     if (!image.loadFromFile(".\\resources\\2048.png"))
     {
+        app.close();
         return 0;
     }
     app.setIcon(image.getSize().x, image.getSize().y, image.getPixelsPtr());

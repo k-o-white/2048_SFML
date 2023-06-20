@@ -5,7 +5,6 @@
 #include "Gameplay.h"
 #include <iostream>
 #include <cmath>
-#include <ctime>
 
 void Gameplay::startNewGame()
 {
@@ -16,7 +15,6 @@ void Gameplay::startNewGame()
         for (int j = 0; j < size; ++j)
             this->field[i][j] = 0;
     }
-    std::srand(std::time(nullptr));
     int values[] = {2, 4};
     for (int i = 0; i < 2; ++i)
     {
@@ -87,7 +85,6 @@ void Gameplay::addNew()
 {
     int values[] = {2, 2, 2, 2, 2, 2, 2,4};
     int i, j;
-    std::srand(std::time(nullptr));
     do {
         i = std::rand() % size;
         j = std::rand() % size;
