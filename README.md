@@ -1,8 +1,11 @@
 <h1>2048 Game</h1>
 
-<p align="center">
-  <img src="./2048_display.gif" alt="Gameplay demonstration"/>
-</p>
+<table align="center">
+  <tr>
+    <td><img src="./screenshots/win.png" alt="Win"/></td>
+    <td><img src="./screenshots/lose.png" alt="Lose"/></td>
+  </tr>
+</table>
 
 <p>This is my implementation of 2048 (<a href="http://gabrielecirulli.github.io/2048/">Click to play original</a>), 
 that was made in C++ using SFML library</p>
