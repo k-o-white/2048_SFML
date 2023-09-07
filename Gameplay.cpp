@@ -15,16 +15,8 @@ void Gameplay::startNewGame()
         for (int j = 0; j < size; ++j)
             this->field[i][j] = 0;
     }
-    int values[] = {2, 4};
     for (int i = 0; i < 2; ++i)
-    {
-        int y, x;
-        do {
-            y = std::rand() % size;
-            x = std::rand() % size;
-        } while (this->field[y][x] != 0);
-        this->field[y][x] = values[std::rand() % 2];
-    }
+        this->addNew();
 }
 
 Gameplay::Gameplay()
@@ -83,7 +75,7 @@ Gameplay::~Gameplay()
 
 void Gameplay::addNew()
 {
-    int values[] = {2, 2, 2, 2, 2, 2, 2,4};
+    int values[] = {2, 2, 2, 2, 2, 2, 2, 2, 2, 4};
     int i, j;
     do {
         i = std::rand() % size;
@@ -369,24 +361,39 @@ void Gameplay::drawGame(sf::RenderWindow &app, const int &cellSize)
             app.draw(tiles[i][j]);
             if (field[i][j] > 0)
             {
-                tileValues[i][j].setPosition(i * cellSize + 35, j * cellSize + 30);
+                sf::FloatRect textRect = tileValues[i][j].getLocalBounds();
+                tileValues[i][j].setOrigin(textRect.width/2.f,textRect.height/2.f);
+                tileValues[i][j].setPosition(tiles[i][j].getPosition() + (tiles[i][j].getSize() / 2.f));
                 if (field[i][j] <= 4)
-                    tileValues[i][j].setColor(sf::Color::Black);
+                    tileValues[i][j].setColor(sf::Color(97, 90, 84));
                 else
                     tileValues[i][j].setColor(sf::Color::White);
                 std::string tileValueText;
                 if (field[i][j] > int(pow(2, 16)))
                 {
                     tileValueText = "2**" + std::to_string(int(log2(double(field[i][j]))));
-                    tileValues[i][j].setCharacterSize(30);
+                    tileValues[i][j].setCharacterSize(40);
                 }
                 else
                 {
                     tileValueText = std::to_string(field[i][j]);
-                    if (tileValueText.length() == 5)
-                        tileValues[i][j].setCharacterSize(30);
-                    if (tileValues[i][j].getCharacterSize() < 40 && tileValueText.length() < 5)
-                        tileValues[i][j].setCharacterSize(40);
+                    switch (tileValueText.length())
+                    {
+                        case 1:
+                            tileValues[i][j].setCharacterSize(65);
+                            break;
+                        case 2:
+                            tileValues[i][j].setCharacterSize(55);
+                            break;
+                        case 3:
+                            tileValues[i][j].setCharacterSize(50);
+                            break;
+                        case 4:
+                            tileValues[i][j].setCharacterSize(40);
+                            break;
+                        default:
+                            tileValues[i][j].setCharacterSize(30);
+                    }
                 }
                 tileValues[i][j].setString(tileValueText);
                 app.draw(tileValues[i][j]);
@@ -405,27 +412,35 @@ void Gameplay::drawGame(sf::RenderWindow &app, const int &cellSize)
     startNewGameText.setPosition(450, 690);
     app.draw(scoreText);
     app.draw(highScoreText);
-    if (!this->isGameOver() && !this->isPlayerWon())
-        app.draw(startNewGameText);
+    app.draw(startNewGameText);
     if (this->isGameOver())
     {
-        sf::Text gameOverText("GAME OVER!\nTry again?\n(y/n)", font, 80);
+        sf::Text gameOverText("GAME OVER!", font, 80);
         gameOverText.setColor(sf::Color::Red);
         gameOverText.setStyle(sf::Text::Bold);
         gameOverText.setOutlineThickness(5.f);
         gameOverText.setOutlineColor(sf::Color::White);
-        gameOverText.setPosition(50, 300);
+        sf::FloatRect textRect = gameOverText.getGlobalBounds();
+        gameOverText.setOrigin(textRect.width/2.f,textRect.height/2.f);
+        gameOverText.setPosition(background.getPosition() + (background.getSize() / 2.f));
         app.draw(gameOverText);
     }
     if (this->isPlayerWon())
     {
-        sf::Text winText("YOU WIN!\nContinue?\n(y/n)", font, 80);
+        sf::Text winText("YOU WIN!", font, 80);
         winText.setColor(sf::Color::Green);
         winText.setStyle(sf::Text::Bold);
         winText.setOutlineThickness(5.f);
         winText.setOutlineColor(sf::Color::White);
-        winText.setPosition(50, 300);
+        sf::FloatRect textRect = winText.getGlobalBounds();
+        winText.setOrigin(textRect.width/2.f,textRect.height/2.f);
+        winText.setPosition(background.getPosition() + (background.getSize() / 2.f));
         app.draw(winText);
+        sf::Text keepGoingText("[Enter] - Keep going", font, 20);
+        keepGoingText.setColor(sf::Color::Black);
+        keepGoingText.setStyle(sf::Text::Bold);
+        keepGoingText.setPosition(425, 720);
+        app.draw(keepGoingText);
     }
 }
 
@@ -533,10 +548,13 @@ void Gameplay::displayGame(sf::RenderWindow &w, const int &cellsize, scenes &sce
         {
             switch (event.key.code)
             {
-                case sf::Keyboard::Y:
+                case sf::Keyboard::Enter:
                     winning = false;
                     break;
-                case sf::Keyboard::N:
+                case sf::Keyboard::Space:
+                    this->startNewGame();
+                    break;
+                case sf::Keyboard::Escape:
                     w.close();
                     break;
             }
@@ -545,10 +563,10 @@ void Gameplay::displayGame(sf::RenderWindow &w, const int &cellsize, scenes &sce
         {
             switch (event.key.code)
             {
-                case sf::Keyboard::Y:
+                case sf::Keyboard::Space:
                     this->startNewGame();
                     break;
-                case sf::Keyboard::N:
+                case sf::Keyboard::Escape:
                     w.close();
                     break;
             }
